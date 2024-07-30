@@ -1,8 +1,8 @@
 import {
+  connect,
+  NatsConnection,
   JetStreamClient,
   JetStreamManager,
-  NatsConnection,
-  connect,
 } from "nats";
 import { Subjects } from "./subjects";
 
@@ -28,9 +28,9 @@ export class NatsWrapper {
     try {
       this._client = await connect({ servers: [url] });
       const subjects = Object.values(Subjects).map(
-        (subject) => `gittix.${subject}`
+        (subject) => `clonedwolf.${subject}`
       );
-      await this.createStreamIfNotExists("GITTIX", subjects);
+      await this.createStreamIfNotExists("CLONEDWOLF", subjects);
       this._jsClient = this.client.jetstream();
       console.log("Successfully connected to NATS and initialized JetStream.");
     } catch (err) {
@@ -67,3 +67,5 @@ export class NatsWrapper {
     }
   }
 }
+
+export const natsWrapper = new NatsWrapper();
