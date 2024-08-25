@@ -15,7 +15,10 @@ export abstract class Publisher<T extends Event> {
   }
 
   async publish(data: T["data"]): Promise<void> {
-    await this.jsClient.publish(`gittix.${this.subject}`, JSON.stringify(data));
+    await this.jsClient.publish(
+      `clonedwolf.${this.subject}`,
+      JSON.stringify(data)
+    );
     console.log("Event published to subject:", this.subject);
   }
 }

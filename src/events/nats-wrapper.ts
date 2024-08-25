@@ -4,19 +4,20 @@ import {
   NatsConnection,
   connect,
 } from "nats";
+import { Subjects } from "./subjects";
 
 export class NatsWrapper {
   private _client?: NatsConnection;
   private _jsClient?: JetStreamClient;
 
-  get client(): NatsConnection {
+  get client() {
     if (!this._client) {
       throw new Error("Cannot access NATS client before connecting.");
     }
     return this._client;
   }
 
-  get jsClient(): JetStreamClient {
+  get jsClient() {
     if (!this._jsClient) {
       throw new Error("Cannot access JetStream client before connecting.");
     }
@@ -26,11 +27,13 @@ export class NatsWrapper {
   async connect(url: string): Promise<void> {
     try {
       this._client = await connect({ servers: [url] });
+      const subjects = Object.values(Subjects).map(
+        (subject) => `clonedwolf.${subject}`
+      );
+      await this.createStreamIfNotExists("CLONEDWOLF", subjects);
+
       this._jsClient = this.client.jetstream();
       console.log("Successfully connected to NATS and initialized JetStream.");
-
-      const subjects = ["gittix.*"];
-      await this.createStreamIfNotExists("GITTIX", subjects);
     } catch (err) {
       console.error("Error in NATS connection: ", err);
       throw err;
@@ -58,12 +61,10 @@ export class NatsWrapper {
     }
   }
 
-  close(): void {
+  close() {
     if (this._client) {
       this._client.close();
       console.log("NATS connection closed.");
     }
   }
 }
-
-export const natsWrapper = new NatsWrapper();
