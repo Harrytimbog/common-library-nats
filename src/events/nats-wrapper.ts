@@ -1,9 +1,10 @@
 import {
-  connect,
-  NatsConnection,
   JetStreamClient,
   JetStreamManager,
+  NatsConnection,
+  connect,
 } from "nats";
+import { Subjects } from "./subjects";
 
 export class NatsWrapper {
   private _client?: NatsConnection;
@@ -26,9 +27,10 @@ export class NatsWrapper {
   async connect(url: string): Promise<void> {
     try {
       this._client = await connect({ servers: [url] });
-      const subjects = ["clonedwolf.*"]; // Generalized subjects for JetStream
-
-      await this.createStreamIfNotExists("CLONEDWOLF", subjects);
+      const subjects = Object.values(Subjects).map(
+        (subject) => `gittix.${subject}`
+      );
+      await this.createStreamIfNotExists("GITTIX", subjects);
       this._jsClient = this.client.jetstream();
       console.log("Successfully connected to NATS and initialized JetStream.");
     } catch (err) {
@@ -65,5 +67,3 @@ export class NatsWrapper {
     }
   }
 }
-
-export const natsWrapper = new NatsWrapper();
