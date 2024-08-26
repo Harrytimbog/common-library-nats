@@ -61,10 +61,12 @@ export class NatsWrapper {
     }
   }
 
-  close() {
+  async close() {
     if (this._client) {
-      this._client.close();
+      await this._client.close();
       console.log("NATS connection closed.");
     }
   }
 }
+
+export const natsWrapper = new NatsWrapper();
