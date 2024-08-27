@@ -25,19 +25,15 @@ export class NatsWrapper {
   }
 
   async connect(url: string): Promise<void> {
-    try {
-      this._client = await connect({ servers: [url] });
-      const subjects = Object.values(Subjects).map(
-        (subject) => `clonedwolf.${subject}`
-      );
-      await this.createStreamIfNotExists("CLONEDWOLF", subjects);
+    this._client = await connect({ servers: [url] });
+    this._jsClient = this.client.jetstream();
 
-      this._jsClient = this.client.jetstream();
-      console.log("Successfully connected to NATS and initialized JetStream.");
-    } catch (err) {
-      console.error("Error in NATS connection: ", err);
-      throw err;
+    // Ensure JetStream is available
+    if (!this._jsClient) {
+      throw new Error("Failed to initialize JetStream Client.");
     }
+
+    console.log("Successfully connected to NATS and initialized JetStream.");
   }
 
   async createStreamIfNotExists(

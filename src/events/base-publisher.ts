@@ -11,6 +11,9 @@ export abstract class Publisher<T extends Event> {
   protected jsClient: JetStreamClient;
 
   constructor(jsClient: JetStreamClient) {
+    if (!jsClient) {
+      throw new Error("JetStreamClient must be initialized before publishing.");
+    }
     this.jsClient = jsClient;
   }
 
