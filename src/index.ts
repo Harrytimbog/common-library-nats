@@ -1,5 +1,3 @@
-import e from "express";
-
 export * from "./errors/bad-request-error";
 export * from "./errors/custom-error";
 export * from "./errors/database-connection-error";
@@ -19,6 +17,9 @@ export * from "./events/base-publisher";
 export * from "./events/subjects";
 export * from "./events/ticket-created-event";
 export * from "./events/ticket-updated-event";
+
+// Orders Status
+export * from "./events/types/order-status";
 
 // Nats Wrapper
 export * from "./events/nats-wrapper";
