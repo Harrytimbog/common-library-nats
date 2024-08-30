@@ -30,7 +30,7 @@ export abstract class Listener<T extends Event> {
   }
 
   async listen() {
-    const subjectToSubscribe = `clonedwolf.${this.subject}`;
+    const subjectToSubscribe = this.subject; // No prefixing here
     try {
       console.log(`Attempting to subscribe to subject: ${subjectToSubscribe}`);
 

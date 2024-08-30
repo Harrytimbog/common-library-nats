@@ -40,9 +40,7 @@ export class NatsWrapper {
         }))
       );
 
-      const subjects = Object.values(Subjects).map(
-        (subject) => `clonedwolf.${subject}`
-      );
+      const subjects = Object.values(Subjects); // No prefixing here
       await this.createStreamIfNotExists("CLONEDWOLF", subjects);
 
       console.log("Successfully connected to NATS and initialized JetStream.");
