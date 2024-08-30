@@ -11,14 +11,12 @@ export abstract class Publisher<T extends Event> {
   protected jsClient: JetStreamClient;
 
   constructor(jsClient: JetStreamClient) {
-    if (!jsClient) {
-      throw new Error("JetStreamClient must be initialized before publishing.");
-    }
     this.jsClient = jsClient;
   }
 
   async publish(data: T["data"]): Promise<void> {
+    console.log(`Publishing event to subject: ${this.subject}`);
     await this.jsClient.publish(this.subject, JSON.stringify(data));
-    console.log("Event published to subject:", this.subject);
+    console.log("Event published successfully");
   }
 }
