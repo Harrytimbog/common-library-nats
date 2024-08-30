@@ -30,7 +30,7 @@ export abstract class Listener<T extends Event> {
   }
 
   async listen() {
-    const subjectToSubscribe = this.subject; // No prefixing here
+    const subjectToSubscribe = this.subject;
     try {
       console.log(`Attempting to subscribe to subject: ${subjectToSubscribe}`);
 
