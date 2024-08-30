@@ -33,6 +33,10 @@ export class NatsWrapper {
       throw new Error("Failed to initialize JetStream Client.");
     }
 
+    // Create stream if it doesn't exist
+    const subjects = ["clonedwolf.order:created", "clonedwolf.order:cancelled"]; // Example subjects
+    await this.createStreamIfNotExists("CLONEDWOLF", subjects);
+
     console.log("Successfully connected to NATS and initialized JetStream.");
   }
 
