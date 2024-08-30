@@ -34,7 +34,10 @@ export class NatsWrapper {
       const streams = await jsm.streams.list().next();
       console.log(
         "Existing Streams:",
-        streams.map((s) => s.config.name)
+        streams.map((s) => ({
+          name: s.config.name,
+          subjects: s.config.subjects,
+        }))
       );
 
       const subjects = Object.values(Subjects).map(
@@ -58,8 +61,12 @@ export class NatsWrapper {
 
     console.log(
       "Current Streams:",
-      streams.map((s) => s.config.name)
+      streams.map((s) => ({
+        name: s.config.name,
+        subjects: s.config.subjects,
+      }))
     );
+
     const streamExists = streams.some(
       (stream) => stream.config.name === streamName
     );
