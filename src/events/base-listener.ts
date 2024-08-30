@@ -31,6 +31,7 @@ export abstract class Listener<T extends Event> {
 
   async listen() {
     try {
+      console.log(`Attempting to subscribe to: clonedwolf.${this.subject}`);
       const subscription = await this.jsClient.subscribe(
         `clonedwolf.${this.subject}`,
         this.subscriptionOptions()

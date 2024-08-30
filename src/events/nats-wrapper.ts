@@ -45,18 +45,27 @@ export class NatsWrapper {
   ): Promise<void> {
     const jsm: JetStreamManager = await this.client.jetstreamManager();
     const streams = await jsm.streams.list().next();
+
+    console.log(
+      "Current Streams:",
+      streams.map((s) => s.config.name)
+    );
     const streamExists = streams.some(
       (stream) => stream.config.name === streamName
     );
 
     if (!streamExists) {
+      console.log(`Creating stream ${streamName} with subjects:`, subjects);
       await jsm.streams.add({
         name: streamName,
         subjects: subjects,
       });
       console.log(`Stream ${streamName} created.`);
     } else {
-      console.log(`Stream ${streamName} already exists.`);
+      console.log(
+        `Stream ${streamName} already exists with subjects:`,
+        subjects
+      );
     }
   }
 
