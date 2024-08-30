@@ -32,7 +32,7 @@ export abstract class Listener<T extends Event> {
   async listen() {
     try {
       const subscription = await this.jsClient.subscribe(
-        `gittix.${this.subject}`,
+        `clonedwolf.${this.subject}`,
         this.subscriptionOptions()
       );
 
