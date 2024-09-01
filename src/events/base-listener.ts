@@ -3,7 +3,6 @@ import {
   JsMsg,
   consumerOpts,
   JetStreamPullSubscription,
-  StringCodec,
 } from "nats";
 import { Subjects } from "./subjects";
 
@@ -24,24 +23,17 @@ export abstract class Listener<T extends Event> {
   }
 
   subscriptionOptions() {
-    const consumerOptions = consumerOpts()
+    return consumerOpts()
       .manualAck()
       .ackWait(this.ackWait)
       .durable(this.queueGroupName);
-
-    return consumerOptions;
   }
 
   async listen() {
-    const subjectToSubscribe = this.subject;
     try {
-      console.log(
-        `Attempting to pull messages from subject: ${subjectToSubscribe}`
-      );
-
       const subscription: JetStreamPullSubscription =
         await this.jsClient.pullSubscribe(
-          subjectToSubscribe,
+          this.subject,
           this.subscriptionOptions()
         );
 
@@ -66,8 +58,6 @@ export abstract class Listener<T extends Event> {
   }
 
   parseMessage(msg: JsMsg) {
-    const sc = StringCodec();
-    const data = sc.decode(msg.data);
-    return JSON.parse(data);
+    return JSON.parse(msg.data.toString());
   }
 }
