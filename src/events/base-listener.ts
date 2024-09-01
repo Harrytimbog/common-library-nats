@@ -21,7 +21,8 @@ export abstract class Listener<T extends Event> {
     const consumerOptions = consumerOpts()
       .manualAck()
       .ackWait(this.ackWait)
-      .durable(this.queueGroupName); // Durable name to keep track of the consumer state
+      .durable(this.queueGroupName)
+      .deliverTo(`${this.queueGroupName}.${this.subject}`); // Specify a deliver subject
 
     return consumerOptions;
   }
@@ -31,17 +32,6 @@ export abstract class Listener<T extends Event> {
     try {
       console.log(`Attempting to subscribe to subject: ${subjectToSubscribe}`);
 
-      const jsm: JetStreamManager = await this.jsClient.jetstreamManager();
-      const streams = await jsm.streams.list().next();
-      console.log(
-        "Available Streams and Subjects:",
-        streams.map((s) => ({
-          streamName: s.config.name,
-          subjects: s.config.subjects,
-        }))
-      );
-
-      // Proceed with subscription
       const subscription = await this.jsClient.subscribe(
         subjectToSubscribe,
         this.subscriptionOptions()
