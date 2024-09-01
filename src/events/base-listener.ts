@@ -1,4 +1,10 @@
-import { JetStreamClient, JsMsg, consumerOpts, JetStreamManager } from "nats";
+import {
+  JetStreamClient,
+  JsMsg,
+  consumerOpts,
+  JetStreamPullSubscription,
+  StringCodec,
+} from "nats";
 import { Subjects } from "./subjects";
 
 interface Event {
@@ -21,8 +27,7 @@ export abstract class Listener<T extends Event> {
     const consumerOptions = consumerOpts()
       .manualAck()
       .ackWait(this.ackWait)
-      .durable(this.queueGroupName)
-      .deliverTo(`${this.queueGroupName}.${this.subject}`); // Specify a deliver subject
+      .durable(this.queueGroupName);
 
     return consumerOptions;
   }
@@ -30,26 +35,39 @@ export abstract class Listener<T extends Event> {
   async listen() {
     const subjectToSubscribe = this.subject;
     try {
-      console.log(`Attempting to subscribe to subject: ${subjectToSubscribe}`);
-
-      // Use the correct method for a push consumer.
-      const subscription = await this.jsClient.subscribe(
-        subjectToSubscribe,
-        this.subscriptionOptions()
+      console.log(
+        `Attempting to pull messages from subject: ${subjectToSubscribe}`
       );
 
-      for await (const msg of subscription) {
-        console.log(`Message received: ${this.subject}/${this.queueGroupName}`);
-        const parsedData = this.parseMessage(msg);
-        this.onMessage(parsedData, msg);
-      }
+      const subscription: JetStreamPullSubscription =
+        await this.jsClient.pullSubscribe(
+          subjectToSubscribe,
+          this.subscriptionOptions()
+        );
+
+      await this.processMessages(subscription);
     } catch (error) {
       console.error("Error while listening:", error);
     }
   }
 
+  async processMessages(subscription: JetStreamPullSubscription) {
+    const batchSize = 10; // Number of messages to pull in each batch
+
+    for (;;) {
+      subscription.pull({ batch: batchSize });
+      for await (const msg of subscription) {
+        console.log(`Message received: ${this.subject}/${this.queueGroupName}`);
+        const parsedData = this.parseMessage(msg);
+        this.onMessage(parsedData, msg);
+        msg.ack(); // Acknowledge after processing
+      }
+    }
+  }
+
   parseMessage(msg: JsMsg) {
-    const data = msg.data;
-    return JSON.parse(data.toString());
+    const sc = StringCodec();
+    const data = sc.decode(msg.data);
+    return JSON.parse(data);
   }
 }
