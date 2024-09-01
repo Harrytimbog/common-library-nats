@@ -32,6 +32,7 @@ export abstract class Listener<T extends Event> {
     try {
       console.log(`Attempting to subscribe to subject: ${subjectToSubscribe}`);
 
+      // Use the correct method for a push consumer.
       const subscription = await this.jsClient.subscribe(
         subjectToSubscribe,
         this.subscriptionOptions()
