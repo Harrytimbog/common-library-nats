@@ -23,17 +23,10 @@ export abstract class Listener<T extends Event> {
   }
 
   subscriptionOptions() {
-    return (
-      consumerOpts()
-        .manualAck()
-        .ackWait(this.ackWait)
-        .durable(this.queueGroupName)
-        // recently added durable name to avoid duplicate messages
-        .deliverGroup(this.queueGroupName)
-        .deliverTo(this.queueGroupName)
-        .queue(this.queueGroupName)
-        .deliverNew()
-    );
+    return consumerOpts()
+      .manualAck()
+      .ackWait(this.ackWait)
+      .durable(this.queueGroupName); // Only keep this for durable consumer
   }
 
   async listen() {
