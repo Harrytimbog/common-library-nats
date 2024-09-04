@@ -8,5 +8,7 @@ export interface TicketUpdatedEvent {
     title: string;
     price: number;
     userId: string;
+    orderId?: string;
+    // orderId is optional because when a ticket is created, it doesn't have an orderId
   };
 }
