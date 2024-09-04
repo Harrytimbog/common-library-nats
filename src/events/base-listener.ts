@@ -46,7 +46,15 @@ export abstract class Listener<T extends Event> {
 
       await this.processMessages(subscription);
     } catch (error) {
-      console.error("Error while listening:", error);
+      const err = error as Error; // Assert the error as an Error object
+      if (err.message.includes("consumer already exists")) {
+        console.warn(
+          `Consumer for ${this.queueGroupName} already exists. Reusing existing consumer.`
+        );
+        // Additional logic can be added here if needed
+      } else {
+        console.error("Error while listening:", err);
+      }
     }
   }
 
