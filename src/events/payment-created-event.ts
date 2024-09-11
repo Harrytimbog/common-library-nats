@@ -8,3 +8,4 @@ export interface PaymentCreatedEvent {
     stripeId: string;
   };
 }
+  
